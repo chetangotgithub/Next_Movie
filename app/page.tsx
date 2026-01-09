@@ -3,6 +3,7 @@ import SearchForm from '../components/SearchForm'
 import MovieCard from '../components/MovieCard'
 import Pagination from '../components/Pagination'
 import { notFound } from 'next/navigation'
+import { headers } from 'next/headers'
 
 type Props = {
   searchParams: { q?: string; page?: string }
@@ -21,7 +22,10 @@ export default async function Page({ searchParams }: Props) {
   }
 
   // Server-side fetch to internal route handler
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  // Use Vercel URL if available, otherwise construct from headers
+  let baseUrl: string
+  baseUrl = `https://${process.env.VERCEL_URL}`
+  console.log(`${baseUrl}/api/movies/search?query=${q}&page=${page || '1'}`);
   const res = await fetch(`${baseUrl}/api/movies/search?query=${q}&page=${page || '1'}`, {
     cache: 'no-store',
   })

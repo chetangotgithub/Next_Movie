@@ -8,11 +8,12 @@ type Props = { params: { id: string } }
 
 export default async function MoviePage({ params }: Props) {
   const {id} = await params
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  const res = await fetch(`${baseUrl}/api/movies/${id}`, {
+  const baseUrl = process.env.VERCEL_URL || 'http://localhost:3000'
+  console.log(`${baseUrl}/api/movies/${id}`);
+  const res = await fetch(`https://${baseUrl}/api/movies/${id}`, {
     cache: 'no-store',
   })
-  const imageURLS = await fetch(`${baseUrl}/api/config`, {
+  const imageURLS = await fetch(`https://${baseUrl}/api/config`, {
     cache: 'no-store',
   })
   const imgData = await imageURLS.json()
