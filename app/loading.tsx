@@ -7,7 +7,7 @@ export default function Loading() {
       fontSize: 22,
       color: "#06b6d4"
     }}>
-      <span>Loading movies…</span>
+      <span>Loading movie Info</span>
 
     </div>
   );

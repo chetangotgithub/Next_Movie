@@ -1,4 +1,5 @@
 import React from 'react'
+import Image from 'next/image'
 
 export default async function MovieCard({ movie }: { movie: any }) {
   const imageURLS = await fetch(`https://api.themoviedb.org/3/configuration`,{ cache: "no-store",
