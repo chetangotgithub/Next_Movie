@@ -22,7 +22,8 @@ export default async function Page({ searchParams }: Props) {
 
   // Server-side fetch to internal route handler
   const baseUrl = process.env.VERCEL_URL || 'http://localhost:3000'
-  const res = await fetch(`/api/movies/search?query=${q}&page=${page || '1'}`, {
+  console.log(`https://${baseUrl}/api/movies/search?query=${q}&page=${page || '1'}`);
+  const res = await fetch(`https://${baseUrl}/api/movies/search?query=${q}&page=${page || '1'}`, {
     cache: 'no-store',
     headers: {
       'Authorization': `Bearer ${process.env.READ_ACCESS_TOKEN}`,
