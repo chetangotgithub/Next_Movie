@@ -39,7 +39,6 @@ export default async function MoviePage({ params }: Props) {
               <li key={c.id}>{c.name} as {c.character}</li>
             ))}
           </ul>
-          {movie.backdrop_path && <p>Backdrop URL: <Link href={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}>url</Link></p>}
         </div>
         
         </div>
