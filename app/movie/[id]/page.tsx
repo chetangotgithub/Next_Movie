@@ -1,19 +1,31 @@
 import React from 'react'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
+import VideoCard from '../../../components/VideoCard'
+import CreditCard from '../../../components/CreditCard'
 
 type Props = { params: { id: string } }
 
 export default async function MoviePage({ params }: Props) {
   const {id} = await params
-  const res = await fetch(`https://api.themoviedb.org/3/movie/${id}`,{
+  const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?append_to_response=videos,credits`,{
           cache: "no-store",
           headers: {
             Authorization: `Bearer ${process.env.READ_ACCESS_TOKEN}`,
             Accept: "application/json",
           },
         })
+  const imageURLS = await fetch(`https://api.themoviedb.org/3/configuration`,{ cache: "no-store",
+    headers: {
+            Authorization: `Bearer ${process.env.READ_ACCESS_TOKEN}`,
+            Accept: "application/json",
+          },
+   })
+  const imgData = await imageURLS.json()
   if (res.status === 404) return notFound()
+    if (res.status === 429) {
+  throw new Error("Too many requests")
+}
   if (!res.ok) {
     return <p>Failed to load movie: {res.status}</p>
   }
@@ -30,18 +42,32 @@ export default async function MoviePage({ params }: Props) {
       )}
       <p>Rating {movie.vote_average} ⭐</p>
       <div style={{display:'flex',gap:16,marginTop:12}}>
-        {movie.poster_path && <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} alt="poster" style={{width:240,borderRadius:8}} />}
+        {movie.poster_path && <img src={`${imgData.images.secure_base_url}/${imgData.images.poster_sizes[4]}${movie.poster_path}`} alt="poster" style={{width:240,borderRadius:8}} />}
         <div>
           <p>{movie.overview}</p>
-          <h4>Top Cast</h4>
-          <ul>
-            {movie.cast?.slice(0,5).map((c: any)=> (
-              <li key={c.id}>{c.name} as {c.character}</li>
-            ))}
-          </ul>
+
         </div>
         
+        
+      </div>
+      <div>
+        <h4>Top Cast</h4>
+          <div style={{display:"flex",gap:10,flexWrap:"wrap"}}>
+            {movie.credits?.cast.slice(0,5).map((c:any)=> (
+              <CreditCard key={c.id} credit={c}/>
+            ))}
+          </div>
         </div>
+        <div>{movie?.videos?.results && movie.videos.results.length > 0 && (
+        <>
+          <h3 style={{margin:"36px 0 8px"}}>Trailers</h3>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit, minmax(300px,1fr))",gap:16}}>
+            {movie.videos.results.slice(0,6).map((v:any)=>(
+              <VideoCard key={v.key} video={v}/>
+            ))}
+          </div>
+        </>
+      )}</div>
     </article>
   )
 }

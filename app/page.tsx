@@ -2,6 +2,7 @@ import React from 'react'
 import SearchForm from '../components/SearchForm'
 import MovieCard from '../components/MovieCard'
 import Pagination from '../components/Pagination'
+import { notFound } from 'next/navigation'
 
 type Props = {
   searchParams: { q?: string; page?: string }
@@ -9,8 +10,6 @@ type Props = {
 
 export default async function Page({ searchParams }: Props) {
   let {q,page} = await searchParams;
-  console.log("Search Query:", q);
-  console.log("Search Query page:", page);
 
   if (!q || q.length < 2) {
     return (
@@ -22,14 +21,17 @@ export default async function Page({ searchParams }: Props) {
   }
 
   // Server-side fetch to internal route handler
-  console.log(`https://api.themoviedb.org/3/search/movie?q=${q}&page=${page}`)
-  const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${q}&page=${page}`,{
+  const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${q}&page=${page}&include_adult=false`,{
           cache: "no-store",
           headers: {
             Authorization: `Bearer ${process.env.READ_ACCESS_TOKEN}`,
             Accept: "application/json",
           },
         })
+  if (res.status === 404) return notFound()
+    if (res.status === 429) {
+    throw new Error("Too many requests")
+  }
   if (!res.ok) {
     return (
       <>
@@ -38,6 +40,7 @@ export default async function Page({ searchParams }: Props) {
       </>
     )
   }
+  
 
   const data = await res.json()
 
