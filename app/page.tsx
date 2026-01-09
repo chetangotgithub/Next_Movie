@@ -21,15 +21,13 @@ export default async function Page({ searchParams }: Props) {
   }
 
   // Server-side fetch to internal route handler
-  const res = await fetch(`https://api.themoviedb.org/3/search/movie?query=${q}&page=${page}&include_adult=false`,{
-          cache: "no-store",
-          headers: {
-            Authorization: `Bearer ${process.env.READ_ACCESS_TOKEN}`,
-            Accept: "application/json",
-          },
-        })
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const res = await fetch(`${baseUrl}/api/movies/search?query=${q}&page=${page || '1'}`, {
+    cache: 'no-store',
+  })
+
   if (res.status === 404) return notFound()
-    if (res.status === 429) {
+  if (res.status === 429) {
     throw new Error("Too many requests")
   }
   if (!res.ok) {
@@ -40,10 +38,8 @@ export default async function Page({ searchParams }: Props) {
       </>
     )
   }
-  
 
   const data = await res.json()
-
   return (
     <>
       <SearchForm initialQuery={q} />

@@ -10,7 +10,6 @@ export default async function CreditCard({ credit }: { credit: any }) {
   const imgData = await imageURLS.json()
 
   return (
-    console.log(credit),
     <div className="card" style={{display:"flex",flexDirection:"row",gap:10,alignItems:"center"}}>
       {credit.profile_path ? (
         <img

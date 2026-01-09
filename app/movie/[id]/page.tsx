@@ -8,19 +8,13 @@ type Props = { params: { id: string } }
 
 export default async function MoviePage({ params }: Props) {
   const {id} = await params
-  const res = await fetch(`https://api.themoviedb.org/3/movie/${id}?append_to_response=videos,credits`,{
-          cache: "no-store",
-          headers: {
-            Authorization: `Bearer ${process.env.READ_ACCESS_TOKEN}`,
-            Accept: "application/json",
-          },
-        })
-  const imageURLS = await fetch(`https://api.themoviedb.org/3/configuration`,{ cache: "no-store",
-    headers: {
-            Authorization: `Bearer ${process.env.READ_ACCESS_TOKEN}`,
-            Accept: "application/json",
-          },
-   })
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const res = await fetch(`${baseUrl}/api/movies/${id}`, {
+    cache: 'no-store',
+  })
+  const imageURLS = await fetch(`${baseUrl}/api/config`, {
+    cache: 'no-store',
+  })
   const imgData = await imageURLS.json()
   if (res.status === 404) return notFound()
     if (res.status === 429) {
