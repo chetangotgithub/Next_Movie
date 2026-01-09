@@ -12,9 +12,15 @@ export default async function MoviePage({ params }: Props) {
   console.log(`${baseUrl}/api/movies/${id}`);
   const res = await fetch(`https://${baseUrl}/api/movies/${id}`, {
     cache: 'no-store',
+    headers: {
+      'Authorization': `Bearer ${process.env.READ_ACCESS_TOKEN}`,
+    },
   })
   const imageURLS = await fetch(`https://${baseUrl}/api/config`, {
     cache: 'no-store',
+    headers: {
+      'Authorization': `Bearer ${process.env.READ_ACCESS_TOKEN}`,
+    },
   })
   const imgData = await imageURLS.json()
   if (res.status === 404) return notFound()
